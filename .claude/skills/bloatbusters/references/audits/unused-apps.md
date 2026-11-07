@@ -53,6 +53,7 @@ These categories are frequent, low-risk disable candidates. They are leads to co
 | Carrier and OEM app installers ("app recommendations" during setup) | Package prefixes `com.dti.` (Digital Turbine), `com.aura.oobe.` (AppCloud/Aura); names containing `appmanager`, `appselector`, `ignite` | They install sponsored apps silently. Disable only, as some are tied to carrier setup on first boot |
 | OEM ad and analytics services | `com.miui.msa.global`, `com.miui.analytics` (Xiaomi); lock-screen content services matching `glance` | Turn off recommendations in Settings first. Disable only after approval |
 | Duplicate OEM apps | A second browser, app store, music player, or email client from the OEM, alongside the Google one the user actually uses | Never disable the app that holds the default role (snapshot) |
+| Samsung feeds and promos | `com.samsung.android.app.spage` (Samsung Free / Bixby Home feed), `com.samsung.sree` (Samsung Global Goals) | Turn the feed page off in home-screen settings first (`audits/launcher.md` §2). Names vary by One UI version, so confirm each one |
 | Trial and game hubs | Preinstalled games, "game center" stubs, trial apps | Confirm the user doesn't use them |
 
 If a package isn't clearly in one of these categories and the user doesn't recognize it, it stays: unknown means protected.

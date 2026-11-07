@@ -31,6 +31,8 @@ Maintenance commands (`"type":"maintenance"` in `changes.jsonl`: cache trim, TRI
    | deviceidle | `dumpsys deviceidle whitelist \| grep -F "user,PACKAGE,"` |
    | netpolicy | `cmd netpolicy list restrict-background-blacklist` (or `denylist`) |
    | uimode | `cmd uimode night` |
+   | role (home app) | `cmd role get-role-holders --user 0 android.app.role.HOME` |
+   | install | `pm list packages --user 0 \| grep -Fx "package:PACKAGE"` and `pm list packages -d` (rollback disables it; uninstalling is the user's step in Settings) |
 
 5. Show a numbered table (target, change, date, current state, rollback) and ask which to reverse.
 6. Run each approved rollback from the log, one at a time. Verify it as in `changes.md`, then append a `"type":"restore"` entry to `changes.jsonl`.

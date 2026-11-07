@@ -13,6 +13,8 @@ OS updates and OEM "repair" jobs can re-enable disabled packages, reinstall remo
 
 For reverted changes, ask whether the user still wants them. Re-applying one is a new change: approval, a new undo step, apply, verify, and log, as in `changes.md`. Never re-apply automatically. The user may have reversed it on purpose.
 
+If `changes.jsonl` has an `install` entry (a launcher installed over ADB), compare its installed `versionName` with the latest release on its source page. It doesn't update itself.
+
 Also look for **new** bloat since the last session: packages that are new since the update (`pm list packages -s` compared with the backup snapshot, if there is one), and new notification-heavy or battery-heavy apps.
 
 ## 2. Did things improve?

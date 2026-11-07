@@ -12,6 +12,7 @@ Use this when the phone misbehaves after a Bloatbusters change: the home screen 
 
 | Symptom | First step |
 |---|---|
+| Home screen blank, looping, or crashing after a launcher switch | Press Home: Android shows a launcher picker or falls back to the stock launcher. Then roll back the `role` change (`undo.md`). Never disable the stock launcher to "fix" it |
 | A feature broke, phone otherwise fine | Find the most recent related change in `changes.jsonl` and run just its rollback from `undo-steps.txt` (`undo.md`, guided undo) |
 | No home screen, no keyboard, or System UI crash loop, but `adb devices -l` shows `device` | Run the rollback for the most recent change now. If the cause isn't clear, run `~/.bloatbusters/RO_SERIALNO/undo.sh` for everything |
 | Phone reboots repeatedly | Run `adb -s SERIAL wait-for-device` while it boots, then run `undo.sh` as soon as the device shows as `device`. adbd usually starts before the home screen |

@@ -46,6 +46,7 @@ grep -nE "Total frames rendered|Janky frames|50th percentile|90th percentile|99t
 - Animation scales of `0.5` or `0` make the phone feel faster. This changes visual behavior, not raw CPU speed (`changes.md`).
 - Revert folklore tweaks: `always_finish_activities` `1` → `0` (`changes.md`). Background process limit and forced peak refresh rate are set back through Developer options.
 - Remove third-party cleaner or booster apps (`audits/unused-apps.md`).
+- Home screen slow, icons redraw after pressing Home, or the user asks about a "faster launcher": `audits/launcher.md`.
 - A live wallpaper or heavy launcher widgets on low-RAM phones: suggest a static wallpaper (the live wallpaper is in the protected snapshot, so change it in Settings, not by disabling it).
 - Update or report an app with repeated crashes or high resource use.
 

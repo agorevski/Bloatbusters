@@ -41,6 +41,7 @@ FORMS=(
   "dumpsys deviceidle whitelist [+]$PKG"
   "cmd netpolicy remove restrict-background-(blacklist|denylist) [0-9]+"
   "cmd uimode night (yes|no|auto)"
+  "cmd role add-role-holder --user 0 android\.app\.role\.HOME $PKG"
 )
 ALLOWED="^($(IFS='|'; echo "${FORMS[*]}"))$"
 

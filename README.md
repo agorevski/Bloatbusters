@@ -4,7 +4,7 @@
 
 **I Ain't Fraid of No Bloat!**
 
-Bloatbusters is a [Claude Code](https://claude.com/claude-code) skill that audits and tunes an Android phone over [ADB](https://developer.android.com/tools/adb). It inspects the phone read-only, explains what it finds, and changes only what you approve. **Every change can be undone with one local script**, apart from a few maintenance commands that are [listed explicitly](#commands-that-cant-be-undone) and never run without their own approval. No root is required.
+Bloatbusters is a [Claude Code](https://claude.com/claude-code) skill that audits and tunes an Android phone or tablet over [ADB](https://developer.android.com/tools/adb). It inspects the phone read-only, explains what it finds, and changes only what you approve. **Every change can be undone with one local script**, apart from a few maintenance commands that are [listed explicitly](#commands-that-cant-be-undone) and never run without their own approval. No root is required.
 
 ## Quick start
 
@@ -25,7 +25,7 @@ To use it from any directory: `cp -R .claude/skills/bloatbusters ~/.claude/skill
 
 ## What it can do
 
-Pick one or more goals: **battery life**, **unused apps**, **RAM**, **storage**, **notifications**, **performance**, **crashes and background errors**, **privacy and permissions**, **data usage**, **connectivity / Android Auto**, **fewer distractions**, **pop-up ads and suspicious apps**, **security check-up**, **accounts and sync**, a **full tune-up**, a **follow-up check** on earlier changes, **back up my phone**, **undo**, or describe your own problem.
+Pick one or more goals: **battery life**, **unused apps**, **RAM**, **storage**, **notifications**, **performance**, **crashes and background errors**, **privacy and permissions**, **data usage**, **connectivity / Android Auto**, **fewer distractions**, **pop-up ads and suspicious apps**, **security check-up**, **accounts and sync**, a **faster or simpler home screen** (including switching to a maintained lightweight launcher), **setting up a phone or tablet for a child** (Family Link, Samsung Kids, purchase and sideloading lockdown, family DNS filtering), a **full tune-up**, a **follow-up check** on earlier changes, **back up my phone**, **undo**, or describe your own problem.
 
 Each session follows the same steps: **ask your goal → inspect read-only → report findings → you approve specific changes → apply → verify.** Each session also saves a numbers-only snapshot (battery drain, free storage, crash counts, and so on), so a later follow-up can show whether things improved and whether an OS update reverted anything.
 
@@ -71,7 +71,7 @@ Choose **back up my phone** (also offered before the first change) to copy media
 ## Safety rules
 
 - Read-only until you approve specific, numbered changes. "Clean everything" is not approval.
-- Core components are off limits: telephony, System UI, Play services, your launcher, keyboard, accessibility services, password-manager autofill, default apps, VPN, companion apps for paired devices, and device management.
+- Core components are off limits: telephony, System UI, Play services, your launcher (and the stock launcher, even after you switch), keyboard, accessibility services, password-manager autofill, default apps, VPN, companion apps for paired devices, and device management.
 - Only the main user profile is changed. Work profiles, Secure Folder, and Dual Apps are left alone.
 - Prefers Settings changes and disabling apps over uninstalling. No root, no bulk removal scripts, no clearing app data, no force-stop "RAM boosters."
 - Raw device output stays in a temporary local folder. Personal data is redacted from anything shown, and nothing is uploaded.

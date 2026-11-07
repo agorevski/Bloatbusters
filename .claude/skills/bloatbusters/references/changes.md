@@ -45,6 +45,8 @@ Only make a change if its rollback is one of the forms `undo.sh` accepts:
 | `dumpsys deviceidle whitelist -PKG` (remove a user-added battery-optimization exemption) | `dumpsys deviceidle whitelist +PKG` |
 | `cmd netpolicy add restrict-background-blacklist UID` (block background mobile data) | `cmd netpolicy remove restrict-background-blacklist UID` |
 | `cmd uimode night yes\|no\|auto` | `cmd uimode night PRIOR` |
+| `cmd role add-role-holder --user 0 android.app.role.HOME PKG` (default home app) | `cmd role add-role-holder --user 0 android.app.role.HOME PRIOR_PKG` |
+| `adb install` of a launcher APK (`audits/launcher.md`) | `pm disable-user --user 0 PKG` (the user uninstalls it in Settings to remove it completely) |
 
 `undo.sh` skips a `pm uninstall` rollback unless the package is part of the system image, so a bad log line can never delete a user-installed app.
 
@@ -65,7 +67,7 @@ If a change cannot be expressed this way (for example a prior settings value con
    ```bash
    printf '%s\n' '{"ts":"2026-01-01T12:00:00Z","device":"RO_SERIALNO","fingerprint":"BUILD_FINGERPRINT","type":"disable","target":"com.example.app","prior":"enabled","command":"pm disable-user --user 0 com.example.app","result":"ok","rollback":"pm enable --user 0 com.example.app","reason":"unused for 90+ days, user confirmed"}' >> ~/.bloatbusters/RO_SERIALNO/changes.jsonl
    ```
-   `type` is one of `disable`, `enable`, `uninstall`, `install-existing`, `setting`, `appops`, `permission`, `deviceidle`, `netpolicy`, `uimode`, `maintenance`, `restore`. Keep `reason` free of personal data. Never edit or delete existing lines in either file.
+   `type` is one of `disable`, `enable`, `uninstall`, `install-existing`, `install`, `role`, `setting`, `appops`, `permission`, `deviceidle`, `netpolicy`, `uimode`, `maintenance`, `restore`. Keep `reason` free of personal data. Never edit or delete existing lines in either file.
 7. **Tell the user** what changed and remind them of the rollback: `~/.bloatbusters/RO_SERIALNO/undo.sh` (or `--dry-run` to preview).
 
 ## Disable a package (preferred)
@@ -164,6 +166,48 @@ adb -s SERIAL shell cmd uimode night        # verify
 ```
 
 If the prior value is `custom` (a schedule), or anything else, use Settings → Display → Dark theme instead.
+
+## Set the default home app (launcher)
+
+Prefer Settings → Apps → Default apps → Home app. Over ADB (Android 10+, SDK 29), after the user picked a launcher in `audits/launcher.md`:
+
+```bash
+adb -s SERIAL shell cmd role get-role-holders --user 0 android.app.role.HOME    # prior: exactly one package
+adb -s SERIAL shell cmd package query-activities --brief -a android.intent.action.MAIN -c android.intent.category.HOME | grep -F "PACKAGE/"   # must print: it is a launcher
+adb -s SERIAL shell cmd role add-role-holder --user 0 android.app.role.HOME PACKAGE
+adb -s SERIAL shell cmd role get-role-holders --user 0 android.app.role.HOME    # verify: PACKAGE
+```
+
+Rollback: `cmd role add-role-holder --user 0 android.app.role.HOME PRIOR_PACKAGE`. The home role has one holder, so adding the prior package replaces the new one. If the prior output is empty or lists more than one package, use the Settings path instead. Some OEM builds refuse third-party home apps over ADB. If the command errors, use Settings.
+
+After switching, ask the user to press Home and open Recents (`audits/launcher.md` §5). Never disable the previous (stock) launcher.
+
+## Install a launcher APK (from the computer)
+
+Only for a launcher the user chose in `audits/launcher.md`, and only when the Play Store version isn't an option. This is the only install Bloatbusters does over ADB. It needs no "Install unknown apps" permission on the phone.
+
+1. **Get the APK from the project's own source:** the F-Droid package page (`https://f-droid.org/packages/PACKAGE/`) or the project's GitHub releases. Never use an APK mirror site. Save it in a new, empty directory (it is untrusted data). If the project publishes a SHA-256 checksum, compare it with `shasum -a 256 FILE.apk`. If Android build-tools are installed, `apksigner verify --print-certs FILE.apk` shows the signing certificate. Compare it with the one the project publishes, if any.
+2. **Preflight:** the package ID comes from the source page (it's in the F-Droid URL). It must not already be installed:
+   ```bash
+   adb -s SERIAL shell pm list packages -u --user 0 | grep -Fx "package:PACKAGE"   # must print nothing
+   adb -s SERIAL shell pm list packages -3 --user 0 > SESSION/third_party_before.txt
+   ```
+3. **Undo step first:** `pm disable-user --user 0 PACKAGE`.
+4. **Install:**
+   ```bash
+   adb -s SERIAL install --user 0 "/path/to/FILE.apk"
+   ```
+   Play Protect may scan it and ask the user to confirm on screen. Xiaomi needs Developer options → **Install via USB**. Samsung Auto Blocker blocks installs over USB. The user must turn it off for the session and back on afterward.
+5. **Verify** that exactly the expected package appeared:
+   ```bash
+   adb -s SERIAL shell pm list packages -3 --user 0 > SESSION/third_party_after.txt
+   diff SESSION/third_party_before.txt SESSION/third_party_after.txt                 # must show only: > package:PACKAGE
+   adb -s SERIAL shell dumpsys package PACKAGE | grep -E "versionName|targetSdk" | head -2
+   ```
+   If a different package appeared, disable it right away (its undo step is already recorded for the expected name, so record one for the actual name first) and stop.
+6. **Log** with `"type":"install"`, the version, and the source URL in `reason`.
+
+Rollback disables the launcher rather than uninstalling it, because Bloatbusters never uninstalls user-installed apps over ADB. Tell the user that to remove it completely, they uninstall it in Settings → Apps, and that an ADB-installed app doesn't update itself. They can reinstall a newer APK the same way, or switch to the store version.
 
 ## Change a setting
 

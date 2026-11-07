@@ -37,6 +37,7 @@ Also ask (don't read over ADB):
 - Is a screen lock set (PIN, pattern, password, or biometrics)? Settings → Security & privacy → Device unlock.
 - Is Find My Device on? Settings → Google → Find My Device (Samsung: also SmartThings Find).
 - Is Play Protect on, and when did it last scan? Play Store → profile → Play Protect.
+- Samsung (One UI 6+): is **Auto Blocker** on? Settings → Security and privacy → Auto Blocker. It is off during a Bloatbusters session (USB debugging needs that). Recommend turning it back on afterward, especially on children's devices.
 - Are app updates pending? Play Store → profile → Manage apps & device. Galaxy Store and other OEM stores have their own update pages.
 
 ## Recommend

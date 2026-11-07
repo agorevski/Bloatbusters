@@ -51,6 +51,8 @@ Run `adb devices -l` and match the state:
 
 | State / symptom | Cause | Fix |
 |---|---|---|
+| USB debugging toggle greyed out (Samsung, One UI 6+) | **Auto Blocker** blocks USB commands | Settings → Security and privacy → Auto Blocker → off, then enable USB debugging. Remind the user to turn Auto Blocker back on after the session (and off again for `undo.sh`). Also check that "Block USB connections while locked" is off, if present |
+| USB debugging toggle greyed out (supervised child account) | Family Link may block Developer options | The parent allows it in Family Link for the session (`audits/kids.md`) |
 | Not listed at all | Charge-only cable, USB mode, driver, or debugging off | Try a known data cable and a different port; set USB mode to **File transfer**; confirm USB debugging is on; Windows: install the OEM USB driver (Google USB Driver for Pixel) |
 | `unauthorized` | Authorization prompt not accepted | Unlock the phone and accept the prompt. If no prompt appears: Developer options → **Revoke USB debugging authorizations**, unplug, `adb kill-server`, reconnect |
 | `offline` | Stale connection or old adb | Unplug and reconnect, `adb kill-server && adb start-server`, update Platform Tools |
