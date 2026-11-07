@@ -29,9 +29,24 @@ done
 # Only these rollback forms are ever executed. Anything else in the steps file
 # is reported and skipped, never run.
 PKG='[A-Za-z0-9_]+(\.[A-Za-z0-9_]+)+'
-ALLOWED="^(pm enable --user 0 $PKG|cmd package install-existing --user 0 $PKG|cmd appops set $PKG [A-Z_]+ (allow|ignore|deny|default|foreground)|settings put (system|secure|global) [A-Za-z0-9_.]+ [A-Za-z0-9_.:,/+-]+|settings delete (system|secure|global) [A-Za-z0-9_.]+|pm grant $PKG [A-Za-z0-9_.]+)$"
+FORMS=(
+  "pm enable --user 0 $PKG"
+  "pm disable-user --user 0 $PKG"
+  "cmd package install-existing --user 0 $PKG"
+  "pm uninstall --user 0 $PKG"
+  "cmd appops set $PKG [A-Z_]+ (allow|ignore|deny|default|foreground)"
+  "settings put (system|secure|global) [A-Za-z0-9_.]+ [A-Za-z0-9_.:,/+-]+"
+  "settings delete (system|secure|global) [A-Za-z0-9_.]+"
+  "pm grant $PKG [A-Za-z0-9_.]+"
+  "dumpsys deviceidle whitelist [+]$PKG"
+  "cmd netpolicy remove restrict-background-(blacklist|denylist) [0-9]+"
+  "cmd uimode night (yes|no|auto)"
+)
+ALLOWED="^($(IFS='|'; echo "${FORMS[*]}"))$"
 
-if ! [[ "$DEVICE_ID" =~ ^[A-Za-z0-9._-]+$ ]]; then
+# The directory name is the phone's ro.serialno. Refuse names that are not a
+# real serial, such as the state root itself or a placeholder.
+if ! [[ "$DEVICE_ID" =~ ^[A-Za-z0-9._-]+$ ]] || [[ "$DEVICE_ID" =~ ^(\.bloatbusters|unknown|\.+)$ ]]; then
   echo "Unexpected device directory name: $DEVICE_ID" >&2; exit 1
 fi
 if [ ! -s "$STEPS" ]; then
@@ -73,6 +88,15 @@ while IFS=$'\t' read -r ts cmd <&3; do
     skipped=$((skipped + 1)); continue
   fi
   [ "$DRY_RUN" -eq 1 ] && continue
+  # Uninstalling a user-installed app would delete it and its data. Only allow
+  # this rollback for packages that are part of the system image.
+  if [[ "$cmd" == "pm uninstall "* ]]; then
+    pkg="${cmd##* }"
+    if ! adb -s "$SERIAL" shell pm list packages -s -u </dev/null | tr -d '\r' | grep -qFx "package:$pkg"; then
+      echo "    SKIPPED: $pkg is not a system-image package, so uninstalling it would delete it. Review it manually."
+      skipped=$((skipped + 1)); continue
+    fi
+  fi
   if [ "$ASSUME_YES" -eq 0 ]; then
     read -r -p "    Run this step? [y/N] " ans || ans=""
     if ! [[ "$ans" =~ ^[Yy]$ ]]; then skipped=$((skipped + 1)); continue; fi

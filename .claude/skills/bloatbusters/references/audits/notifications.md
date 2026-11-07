@@ -19,6 +19,8 @@ grep -A 60 -F "AppSettings: PACKAGE" SESSION/notification.txt | grep -oE "mId='[
 
 Channel dumps vary by version. If channel metadata isn't cleanly extractable, describe the app-level finding and send the user to the Settings path.
 
+If a **browser** is near the top, the notifications probably come from websites the user allowed, not the browser itself. Point to the browser's site settings (Chrome → Settings → Site settings → Notifications). Spammy "virus" or "prize" alerts are covered in `audits/adware.md`.
+
 ## Recommend (precise, user-approved)
 
 - Turn off or silence a specific channel (Settings → Notifications → App notifications → APP → channel).

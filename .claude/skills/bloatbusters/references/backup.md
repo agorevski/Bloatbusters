@@ -50,10 +50,11 @@ adb -s SERIAL shell pm list packages -d > BK/snapshot/packages_disabled.txt
 adb -s SERIAL shell pm list packages -u > BK/snapshot/packages_including_uninstalled.txt
 adb -s SERIAL shell pm list packages -3 > BK/snapshot/packages_third_party.txt
 for ns in system secure global; do adb -s SERIAL shell settings list $ns > BK/snapshot/settings_$ns.txt; done
-cp ~/.bloatbusters/RO_SERIALNO/changes.jsonl ~/.bloatbusters/RO_SERIALNO/undo-steps.txt BK/snapshot/ 2>/dev/null
+adb -s SERIAL shell pm list users > BK/snapshot/users.txt
+cp ~/.bloatbusters/RO_SERIALNO/changes.jsonl ~/.bloatbusters/RO_SERIALNO/undo-steps.txt ~/.bloatbusters/RO_SERIALNO/metrics.jsonl BK/snapshot/ 2>/dev/null
 ```
 
-**Media and files**: one top-level folder at a time, skipping `Android` (app-private, mostly inaccessible on Android 11+). Large pulls take a while, so run them in the background and report progress per folder:
+**Media and files**: one top-level folder at a time, skipping `Android` (app-private, mostly inaccessible on Android 11+). `Android/media` is readable and holds messaging-app media (for example WhatsApp images and voice notes). Offer it as a separate item. It can be large, and the app's own backup is the better way to restore chats. Large pulls take a while, so run them in the background and report progress per folder:
 ```bash
 mkdir -p BK/sdcard
 adb -s SERIAL pull -a /sdcard/DCIM BK/sdcard/
@@ -95,3 +96,4 @@ Without root, these are **not** in a Bloatbusters backup. Recommend the official
 - WhatsApp, Signal, and other chat apps → each app's own backup.
 - **Authenticator / 2FA codes** → the authenticator's export or cloud sync. Losing these can lock the user out of accounts, so call this out explicitly.
 - Wi-Fi passwords, eSIMs, wallet cards, and biometrics → re-add after a reset.
+- Work profile, Samsung Secure Folder, and Dual Apps data → only user 0's shared storage is backed up. Use the employer's process or Samsung's Secure Folder backup.

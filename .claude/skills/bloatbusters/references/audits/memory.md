@@ -23,3 +23,5 @@ Drill into one app: `adb -s SERIAL shell dumpsys meminfo PACKAGE`.
 ## Recommendations
 
 Only for a demonstrated problem: update or report a leaking app, restrict or remove a confirmed-unneeded user app or service. Never recommend task killers, routine force-stops, or disabling core services to make the numbers look better.
+
+If a third-party "RAM booster" or cleaner is installed, it is likely part of the problem: it kills apps that Android then restarts. Recommend removing it (`audits/unused-apps.md`). Also check for **Don't keep activities** and a **Background process limit** left on in Developer options (`audits/performance.md`), which cause constant reloading that looks like memory pressure.

@@ -26,6 +26,8 @@ Prefer the crash and events buffers over the main log. Avoid `dumpsys dropbox --
 
 - Look for recurring fatal exceptions, ANRs, repeated process deaths, crash loops, and failing services. Correlate package names and timestamps.
 - A single warning or a one-off crash is usually not a fault.
+- **Missing components:** if a crash or ANR names a class or package that isn't installed, or the log shows `ActivityNotFoundException` / `NameNotFoundException` / `Unable to find provider` for a system package, check it against the packages disabled or uninstalled before Bloatbusters (`audits/unused-apps.md`) and Bloatbusters' own `changes.jsonl`. A removed dependency is a common cause of crash loops after debloating.
+- **Our own changes:** if a crash started after a Bloatbusters change (compare timestamps with `changes.jsonl`), roll that change back first (`undo.md`).
 - Redact tokens, emails, phone numbers, account names, message content, and device identifiers before quoting.
 
 ## Recommend

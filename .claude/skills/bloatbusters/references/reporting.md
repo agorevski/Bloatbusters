@@ -34,10 +34,14 @@ Number every change so the user can approve items individually. For each:
 
 - Settings-app steps count as changes too. List the exact Settings path.
 - Mark anything that touches a package from the protected-state snapshot as **not recommended**. Include it only if the user asked for it specifically.
+- Mark approval-only maintenance commands (`changes.md`) as **not undoable** in the Risk column, and write "none: not undoable" plus what is lost in the Rollback column.
+- If §3 found the device ID unusable, or the current user is not 0, list only Settings-app steps and explain why.
 - End with a direct question: "Which of these should I apply? Reply with numbers, or 'none'."
 
 ## Final summary (after applying)
 
 - What changed (with change-log entries), what was skipped, and anything that failed.
 - Rollback commands for each change.
-- What to observe and for how long (for example "compare overnight battery drain over 2–3 similar nights").
+- What to observe and for how long (for example "compare overnight battery drain over 2–3 similar nights"), and when a follow-up check (`audits/follow-up.md`) would be useful, for example after the next OS update.
+- That a numbers-only line was added to `~/.bloatbusters/RO_SERIALNO/metrics.jsonl`.
+- The reminder to turn off USB/Wireless debugging once the phone has worked normally for a while (SKILL.md §4).
